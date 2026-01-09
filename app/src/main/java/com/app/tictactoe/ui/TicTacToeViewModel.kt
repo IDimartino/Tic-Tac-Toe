@@ -20,6 +20,10 @@ class TicTacToeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(TicTacToeUiState())
     val uiState: StateFlow<TicTacToeUiState> = _uiState.asStateFlow()
 
+    init {
+        updateState()
+    }
+
     fun onAction(action: TicTacToeAction) {
         when (action) {
             is TicTacToeAction.CellClicked -> {

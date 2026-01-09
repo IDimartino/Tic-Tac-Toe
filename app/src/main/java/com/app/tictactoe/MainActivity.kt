@@ -14,6 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -21,7 +22,7 @@ class MainActivity : ComponentActivity() {
             TicTacToeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     TicTacToeScreen(
-                        viewModel = hiltViewModel(),
+                        viewModel = androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel(),
                         contentPadding = innerPadding
                     )
                 }
