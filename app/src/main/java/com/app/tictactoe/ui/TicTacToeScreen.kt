@@ -11,11 +11,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.app.tictactoe.domain.GameResult
+import com.app.tictactoe.R
 import com.app.tictactoe.domain.Player
 
 @Composable
@@ -34,21 +35,27 @@ fun TicTacToeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // UI logic for status text (To be refactored later)
-        val statusText = when (val result = uiState.result) {
-            is GameResult.InProgress -> "Player ${uiState.currentPlayer}'s Turn"
-            is GameResult.Win -> "Player ${result.player} Wins!"
-            GameResult.Draw -> "It's a Draw!"
-        }
+        Text(
+            text = stringResource(R.string.app_name),
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold
+        )
 
-        Text(text = "Tic Tac Toe", style = MaterialTheme.typography.headlineLarge)
         Spacer(modifier = Modifier.height(32.dp))
-        Text(text = statusText, style = MaterialTheme.typography.headlineSmall)
+
+        // Clean: No logic here, the ViewModel decides WHAT to show via UiText
+        Text(
+            text = uiState.statusText.asString(),
+            style = MaterialTheme.typography.headlineSmall
+        )
+
         Spacer(modifier = Modifier.height(24.dp))
 
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
-            modifier = Modifier.aspectRatio(1f).border(2.dp, MaterialTheme.colorScheme.primary)
+            modifier = Modifier
+                .aspectRatio(1f)
+                .border(2.dp, MaterialTheme.colorScheme.primary)
         ) {
             items(9) { index ->
                 CellView(
@@ -59,8 +66,9 @@ fun TicTacToeScreen(
         }
 
         Spacer(modifier = Modifier.height(32.dp))
+
         Button(onClick = { viewModel.onAction(TicTacToeAction.ResetClicked) }) {
-            Text("Reset Game")
+            Text(stringResource(R.string.reset_game))
         }
     }
 }
