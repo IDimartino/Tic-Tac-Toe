@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tictactoe.R
 import com.app.tictactoe.domain.Player
+import com.app.tictactoe.ui.theme.TicTacToeTheme
 
 @Composable
 fun TicTacToeScreen(
@@ -27,11 +28,28 @@ fun TicTacToeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    TicTacToeContent(
+        uiState = uiState,
+        onAction = viewModel::onAction,
+        modifier = modifier,
+        contentPadding = contentPadding
+    )
+}
+
+@Composable
+fun TicTacToeContent(
+    uiState: TicTacToeUiState,
+    onAction: (TicTacToeAction) -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp)
+) {
+    val dimensions = TicTacToeTheme.dimensions
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(contentPadding)
-            .padding(16.dp),
+            .padding(dimensions.mediumPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -41,33 +59,41 @@ fun TicTacToeScreen(
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(dimensions.extraLargePadding))
 
-        // Clean: No logic here, the ViewModel decides WHAT to show via UiText
-        Text(
-            text = uiState.statusText.asString(),
-            style = MaterialTheme.typography.headlineSmall
-        )
+        // STABILIZATION: Fixed height Box keeps the Board position constant
+        Box(
+            modifier = Modifier.height(dimensions.statusContainerHeight),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = uiState.statusText.asString(),
+                style = MaterialTheme.typography.headlineSmall
+            )
+        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(dimensions.largePadding))
 
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             modifier = Modifier
                 .aspectRatio(1f)
-                .border(2.dp, MaterialTheme.colorScheme.primary)
+                .border(dimensions.boardBorderWidth, MaterialTheme.colorScheme.primary)
         ) {
             items(9) { index ->
                 CellView(
                     player = uiState.board[index],
-                    onClick = { viewModel.onAction(TicTacToeAction.CellClicked(index)) }
+                    onClick = { onAction(TicTacToeAction.CellClicked(index)) }
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(dimensions.extraLargePadding))
 
-        Button(onClick = { viewModel.onAction(TicTacToeAction.ResetClicked) }) {
+        Button(
+            onClick = { onAction(TicTacToeAction.ResetClicked) },
+            modifier = Modifier.height(dimensions.actionButtonHeight)
+        ) {
             Text(stringResource(R.string.reset_game))
         }
     }
@@ -75,10 +101,11 @@ fun TicTacToeScreen(
 
 @Composable
 fun CellView(player: Player?, onClick: () -> Unit) {
+    val dimensions = TicTacToeTheme.dimensions
     Box(
         modifier = Modifier
             .aspectRatio(1f)
-            .border(1.dp, MaterialTheme.colorScheme.outline)
+            .border(dimensions.cellBorderWidth, MaterialTheme.colorScheme.outline)
             .clickable(enabled = player == null, onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
@@ -86,7 +113,7 @@ fun CellView(player: Player?, onClick: () -> Unit) {
             text = player?.name ?: "",
             fontSize = 40.sp,
             fontWeight = FontWeight.Bold,
-            color = if (player == Player.X) Color.Blue else Color.Red
+            color = if (player == Player.X) MaterialTheme.colorScheme.primary else Color.Red
         )
     }
 }
