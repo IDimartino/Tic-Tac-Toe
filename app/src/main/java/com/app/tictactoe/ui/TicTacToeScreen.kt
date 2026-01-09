@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.tictactoe.R
+import com.app.tictactoe.domain.GameConstants.BOARD_SIZE
+import com.app.tictactoe.domain.GameConstants.CELL_COUNT
 import com.app.tictactoe.domain.Player
 import com.app.tictactoe.ui.theme.TicTacToeTheme
 
@@ -61,7 +63,6 @@ fun TicTacToeContent(
 
         Spacer(modifier = Modifier.height(dimensions.extraLargePadding))
 
-        // STABILIZATION: Fixed height Box keeps the Board position constant
         Box(
             modifier = Modifier.height(dimensions.statusContainerHeight),
             contentAlignment = Alignment.Center
@@ -75,12 +76,12 @@ fun TicTacToeContent(
         Spacer(modifier = Modifier.height(dimensions.largePadding))
 
         LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
+            columns = GridCells.Fixed(BOARD_SIZE), // Scalable
             modifier = Modifier
                 .aspectRatio(1f)
                 .border(dimensions.boardBorderWidth, MaterialTheme.colorScheme.primary)
         ) {
-            items(9) { index ->
+            items(CELL_COUNT) { index -> // Scalable
                 CellView(
                     player = uiState.board[index],
                     onClick = { onAction(TicTacToeAction.CellClicked(index)) }
